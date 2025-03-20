@@ -70,7 +70,7 @@ export async function postCityRecipe(req, rep) {
         }
 
         recipes[cityId].push({id: ++nbRecipes, content:content})
-        rep.send({id: nbRecipes, content:content})
+        rep.status(201).send({id: nbRecipes, content:content})
 
     } catch (error) {
         console.error(error);
