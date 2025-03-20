@@ -88,13 +88,27 @@ export async function deleteCityRecipe(req, rep) {
         const responseCity = await fetch(`https://api-ugi2pflmha-ew.a.run.app/cities?apiKey=${process.env.API_KEY}&search=${cityId}`);
 
         if (responseCity.status == 404) {
-            throw new Error("La ville n'existe pas");
+            rep.status(404).send({error:"La ville n'existe pas"});
+            return
         }
+
+        if (Object.keys(recipes).includes(cityId)) {
+            let len = recipes[cityId].length
+            recipes[cityId] = recipes[cityId].filter((v) => {return v.id != recipeId})
+
+            if (len == recipes[cityId].length) {
+                rep.status(404).send({error:"La recette n'existe pas"});
+                return
+            }
+        } else {
+            rep.status(404).send({error:"La recette n'existe pas"});
+            return
+        }
+
+        rep.status(204).send({})
     } catch (error) {
         console.error(error);
         rep.status(500).send({ error: error.message });
     }
-    
-
 
 }
