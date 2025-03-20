@@ -22,10 +22,10 @@ export async function getCityInfo(req, rep) {
         const meteo = await responseMeteo.json();
 
         rep.send({
-            coordinates:insights.coordinates,
+            coordinates:[insights.coordinates.latitude, insights.coordinates.longitude],
             population:insights.population,
             knownFor:insights.knownFor,
-            weatherPredictions:[meteo[0].predictions.latitude, meteo[0].predictions.longitude],
+            weatherPredictions:meteo[0].predictions,
             recipes:recipes[cityId] ? recipes[cityId] : []
         })
 
