@@ -25,7 +25,7 @@ export async function getCityInfo(req, rep) {
             coordinates:insights.coordinates,
             population:insights.population,
             knownFor:insights.knownFor,
-            weatherPredictions:meteo[0].predictions,
+            weatherPredictions:[meteo[0].predictions.latitude, meteo[0].predictions.longitude],
             recipes:recipes[cityId] ? recipes[cityId] : []
         })
 
@@ -56,7 +56,8 @@ export async function postCityRecipe(req, rep) {
         const responseCity = await fetch(`https://api-ugi2pflmha-ew.a.run.app/cities?apiKey=${process.env.API_KEY}&search=${cityId}`);
 
         if (responseCity.status == 404) {
-            throw new Error("La ville n'existe pas");
+            rep.status(404).send({error:"La ville n'existe pas"});
+            return
         } 
 
         if (!Object.keys(recipes).includes(cityId)) {
@@ -64,7 +65,8 @@ export async function postCityRecipe(req, rep) {
         }
 
         if (content.length < 10 || content.length > 2000) {
-            throw new Error("Content too short or too long");
+            rep.status(400).send({ error:"Content too short or too long"});
+            return
         }
 
         recipes[cityId].push({id: ++nbRecipes, content:content})
@@ -72,7 +74,7 @@ export async function postCityRecipe(req, rep) {
 
     } catch (error) {
         console.error(error);
-        rep.status(500).send({ error: error.message });
+        rep.status(400).send({ error: error.message });
     }
     
 }
